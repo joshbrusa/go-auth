@@ -2,7 +2,7 @@ package routers
 
 import (
 	"github.com/gorilla/mux"
-	"github.com/joshbrusa/go-auth/src/handlers/authHandlers"
+	"github.com/joshbrusa/go-auth/src/api/v1/handlers/authHandlers"
 )
 
 func UseAuthRouter(authRouter *mux.Router) {
