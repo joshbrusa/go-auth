@@ -1,36 +1,46 @@
 package main
 
 import (
-	"log"
 	"log/slog"
 	"net/http"
 	"os"
 
-	"go-auth/src/handlers"
-
-	"github.com/gorilla/mux"
 	"github.com/joho/godotenv"
+	"github.com/joshbrusa/go-auth/src/routers"
+	"github.com/joshbrusa/go-auth/src/utils"
 )
 
-func main() {
-	loadErr := godotenv.Load()
-
-  if loadErr != nil {
-    log.Fatal("Error loading .env file.")
-  }
-
-  port := os.Getenv("PORT")
+func SetJsonSlog() {
+	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
 	
-	r := mux.NewRouter()
+	slog.SetDefault(logger)
+}
 
-	r.HandleFunc("/", handlers.RootHandler)
-	r.HandleFunc("/auth", handlers.AuthHandler)
+func LoadEnv() {
+	err := godotenv.Load()
+
+	if (err != nil) {
+		slog.Error(err.Error())
+		os.Exit(1)
+	}
+}
+
+func StartServer() {
+	port := utils.GetPort()
+	router := routers.UseRouter()
 
 	slog.Info("Server listening on port " + port)
 
-	ListenAndServeErr := http.ListenAndServe(port, r)
+	err := http.ListenAndServe(port, router)
 
-	if ListenAndServeErr != nil {
-		log.Fatal("Error listening and serving.")
+	if (err != nil) {
+		slog.Error(err.Error())
+		os.Exit(1)
 	}
+}
+
+func main() {
+	SetJsonSlog()
+	LoadEnv()
+	StartServer()
 }
