@@ -1,7 +1,12 @@
 package userhandlers
 
-import "net/http"
+import (
+	"database/sql"
+	"net/http"
+)
 
-func CreateHandler(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusOK)
+func CreateHandler(db *sql.DB) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	}
 }

@@ -1,11 +1,11 @@
-package authHandlers
+package userhandlers
 
 import (
 	"database/sql"
 	"net/http"
 )
 
-func SignUpHandler(db *sql.DB) http.HandlerFunc {
+func ReadAllHandler(db *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 	}
