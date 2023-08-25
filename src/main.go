@@ -1,11 +1,15 @@
 package main
 
 import (
+	"database/sql"
 	"log/slog"
+	"net/http"
 	"os"
 
+	"github.com/gorilla/mux"
 	"github.com/joho/godotenv"
-	"github.com/joshbrusa/go-auth/src/api"
+	"github.com/joshbrusa/go-auth/src/routers"
+	"github.com/joshbrusa/go-auth/src/utils"
 )
 
 func SetJsonSlog() {
@@ -23,8 +27,51 @@ func LoadEnv() {
 	}
 }
 
+func NewDB() *sql.DB {
+	db, err := sql.Open("mysql", "username:password@(127.0.0.1:3306)/db?parseTime=true")
+
+	if (err != nil) {
+		slog.Error(err.Error())
+		os.Exit(1)
+	}
+
+	return db
+}
+
+func PingDB(db *sql.DB) {
+	err := db.Ping()
+
+	if (err != nil) {
+		slog.Error(err.Error())
+		os.Exit(1)
+	}
+}
+
+func StartServer(router *mux.Router) {
+	port := utils.GetPort()
+
+	slog.Info("Server listening on port " + port)
+
+	err := http.ListenAndServe(port, router)
+
+	if (err != nil) {
+		slog.Error(err.Error())
+		os.Exit(1)
+	}
+}
+
 func main() {
+	// set up
 	SetJsonSlog()
 	LoadEnv()
-	api.StartServer()
+
+	// new db
+	db := NewDB()
+	PingDB(db)
+
+	// new router
+	router := routers.NewRouter(db)
+
+	// start server
+	StartServer(router)
 }
