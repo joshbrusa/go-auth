@@ -6,31 +6,22 @@ import (
 	"net/http"
 	"os"
 
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/gorilla/mux"
-	"github.com/joho/godotenv"
 	"github.com/joshbrusa/go-auth/src/routers"
 	"github.com/joshbrusa/go-auth/src/utils"
 )
 
 func SetJsonSlog() {
 	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
-	
+
 	slog.SetDefault(logger)
 }
 
-func LoadEnv() {
-	err := godotenv.Load()
-
-	if (err != nil) {
-		slog.Error(err.Error())
-		os.Exit(1)
-	}
-}
-
 func NewDB() *sql.DB {
-	db, err := sql.Open("mysql", "username:password@(127.0.0.1:3306)/db?parseTime=true")
+	db, err := sql.Open("mysql", "username:password@(mysql:3306)/db?parseTime=true")
 
-	if (err != nil) {
+	if err != nil {
 		slog.Error(err.Error())
 		os.Exit(1)
 	}
@@ -41,7 +32,7 @@ func NewDB() *sql.DB {
 func PingDB(db *sql.DB) {
 	err := db.Ping()
 
-	if (err != nil) {
+	if err != nil {
 		slog.Error(err.Error())
 		os.Exit(1)
 	}
@@ -52,9 +43,9 @@ func StartServer(router *mux.Router) {
 
 	slog.Info("Server listening on port " + port)
 
-	err := http.ListenAndServe(port, router)
+	err := http.ListenAndServe(":" + port, router)
 
-	if (err != nil) {
+	if err != nil {
 		slog.Error(err.Error())
 		os.Exit(1)
 	}
@@ -63,7 +54,6 @@ func StartServer(router *mux.Router) {
 func main() {
 	// set up
 	SetJsonSlog()
-	LoadEnv()
 
 	// new db
 	db := NewDB()

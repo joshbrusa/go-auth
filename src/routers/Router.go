@@ -10,7 +10,7 @@ import (
 func NewRouter(db *sql.DB) *mux.Router {
 	router := mux.NewRouter()
 
-	router.HandleFunc("/", rootHandlers.RootHandler)
+	router.HandleFunc("/", rootHandlers.RootHandler())
 
 	authRouter := router.PathPrefix("/auth").Subrouter()
 	UseAuthRouter(authRouter, db)
