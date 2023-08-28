@@ -43,7 +43,7 @@ func StartServer(router *mux.Router) {
 
 	slog.Info("Server listening on port " + port)
 
-	err := http.ListenAndServe(":" + port, router)
+	err := http.ListenAndServe(":"+port, router)
 
 	if err != nil {
 		slog.Error(err.Error())
