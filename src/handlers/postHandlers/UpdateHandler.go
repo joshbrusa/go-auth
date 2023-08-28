@@ -1,4 +1,4 @@
-package userHandlers
+package postHandlers
 
 import (
 	"database/sql"

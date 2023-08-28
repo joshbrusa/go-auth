@@ -18,5 +18,8 @@ func NewRouter(db *sql.DB) *mux.Router {
 	userRouter := router.PathPrefix("/user").Subrouter()
 	UseUserRouter(userRouter, db)
 
+	postRouter := router.PathPrefix("/post").Subrouter()
+	UseUserRouter(postRouter, db)
+
 	return router
 }
