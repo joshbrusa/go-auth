@@ -12,6 +12,7 @@ func NewRouter(db *sql.DB) *mux.Router {
 	router := mux.NewRouter()
 
 	router.Use(middleware.LoggingMiddleware)
+	router.Use(middleware.ContentTypeMiddleware)
 	router.Use(middleware.PanicMiddleware)
 
 	router.HandleFunc("/", rootHandlers.RootHandler())

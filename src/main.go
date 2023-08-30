@@ -41,7 +41,7 @@ func PingDB(db *sql.DB) {
 func StartServer(router *mux.Router) {
 	port := utils.GetPort()
 
-	slog.Info("Server listening on port " + port)
+	slog.Info("Server listening on port: " + port)
 
 	err := http.ListenAndServe(":"+port, router)
 

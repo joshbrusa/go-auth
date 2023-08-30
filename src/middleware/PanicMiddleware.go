@@ -2,29 +2,43 @@ package middleware
 
 import (
 	"encoding/json"
+	"log/slog"
 	"net/http"
-	"reflect"
+
+	"github.com/joshbrusa/go-auth/src/utils"
 )
 
 func PanicMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		defer func() {
 			w.WriteHeader(http.StatusInternalServerError)
+			slog.Error("internal server error")
 
-			rec := recover()
+			if r := recover(); r != nil {
+				if panicData, ok := r.(utils.PanicData); ok {
+					slog.Error(
+						panicData.Msg,
+						"file", panicData.File,
+						"line", panicData.Line,
+					)
 
-			if rec == nil || reflect.TypeOf(rec).String() != "string" {
-				return
+					data := map[string]string{
+						"msg": panicData.Msg,
+					}
+					
+					json, err := json.Marshal(data)
+
+					if err != nil {
+						return
+					}
+					
+					w.Write(json)
+				} else {
+					slog.Error("Panic data type error.")
+				}
+			} else {
+				slog.Error("Unable to recover panic.")
 			}
-
-			json, err := json.Marshal(rec)
-
-			if err != nil {
-				return
-			}
-
-			// fix this response, json not working
-			w.Write(json)
 		}()
 
 		next.ServeHTTP(w, r)
