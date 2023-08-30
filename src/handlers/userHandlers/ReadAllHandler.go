@@ -10,6 +10,10 @@ import (
 
 func ReadAllHandler(db *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+
+		// testing
+		panic("this is a test")
+		
 		query := `SELECT id, username, password, created_at FROM users`
 		rows, err := db.Query(query)
 

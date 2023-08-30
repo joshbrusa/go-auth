@@ -5,10 +5,14 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/joshbrusa/go-auth/src/handlers/rootHandlers"
+	"github.com/joshbrusa/go-auth/src/middleware"
 )
 
 func NewRouter(db *sql.DB) *mux.Router {
 	router := mux.NewRouter()
+
+	router.Use(middleware.LoggingMiddleware)
+	router.Use(middleware.PanicMiddleware)
 
 	router.HandleFunc("/", rootHandlers.RootHandler())
 
