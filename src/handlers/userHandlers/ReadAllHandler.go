@@ -8,26 +8,15 @@ import (
 	"runtime"
 
 	"github.com/joshbrusa/go-auth/src/models"
-	"github.com/joshbrusa/go-auth/src/utils"
 )
 
 func ReadAllHandler(db *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		_, file, line, _ := runtime.Caller(0)
-
-		panicData := utils.PanicData{
-			Msg: "Error encoding json.",
-			File: file,
-			Line: line,
-		}
-		utils.NewPanic(panicData)
-		panic("Error encoding json.")
-
 		query := `SELECT id, username, password, created_at FROM users`
 		rows, err := db.Query(query)
 
 		if (err != nil) {
-			panic("Error querying users.")
+			panic(err.Error())
 		}
 
 		var users []models.User
