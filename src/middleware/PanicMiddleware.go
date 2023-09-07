@@ -1,49 +1,46 @@
 package middleware
 
 import (
-	"encoding/json"
 	"log/slog"
 	"net/http"
+
+	"github.com/joshbrusa/go-auth/src/utils"
 )
 
+/*
+Reminder: Panic middleware runs at the end of every request.
+*/
 func PanicMiddleware(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	return http.HandlerFunc(func(w http.ResponseWriter, rec *http.Request) {
 		defer func() {
-			r := recover()
+			rec := recover()
 
-			if r == nil {
+			if rec == nil {
 				return
 			}
-
-			w.WriteHeader(http.StatusInternalServerError)
 
 			msg := "Internal server error."
 
 			slog.Error(msg)
 
-			data := map[string]string{
-				"msg": msg,
+			response := &utils.Response{
+				ResponseWriter: w,
+				StatusCode: http.StatusInternalServerError,
+				Data: msg,
 			}
 
-			json, err := json.Marshal(data)
+			response.Send()
 
-			if err != nil {
-				slog.Error(err.Error())
-				return
-			}
-
-			w.Write(json)
-
-
-			msg, ok := r.(string)
+			recMsg, ok := rec.(string)
 
 			if !ok {
 				slog.Error("Wrong panic type.")
+				return
 			}
 
-			slog.Error(msg)
+			slog.Error(recMsg)
 		}()
 
-		next.ServeHTTP(w, r)
+		next.ServeHTTP(w, rec)
 	})
 }

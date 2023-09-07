@@ -5,7 +5,7 @@ import "time"
 type Post struct {
 	CreatedAt time.Time
 	UpdateAt  time.Time
-	ID        int
+	Id        int
 	Title     string
 	Body      string
 }
